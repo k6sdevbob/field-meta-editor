@@ -7,6 +7,5 @@
     "workspaces": [
         "packages/*"
     ],
-    "author": "Kylian S. <dev.bob@kanaries.net>",
-    "license": "none"
+    "author": "Kylian S. <dev.bob@kanaries.net>"
 }

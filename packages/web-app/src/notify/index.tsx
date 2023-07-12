@@ -1,4 +1,4 @@
-import { Fragment, useState, createContext, useCallback, ReactElement, useContext } from "react";
+import { Fragment, useState, createContext, useCallback, type ReactNode, useContext } from "react";
 import { Transition } from "@headlessui/react";
 import { CheckCircleIcon } from "@heroicons/react/24/outline";
 import { XMarkIcon } from "@heroicons/react/20/solid";
@@ -28,7 +28,7 @@ function getNotificationIcon(type: INotification["type"]) {
     }
 }
 
-const NotificationWrapper: React.FC<{ children: ReactElement }> = (props) => {
+const NotificationWrapper: React.FC<{ children: ReactNode }> = (props) => {
     const [show, setShow] = useState(false);
     const [notification, setNotification] = useState<INotification | null>(null);
 
