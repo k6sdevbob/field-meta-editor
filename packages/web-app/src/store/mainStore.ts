@@ -14,7 +14,7 @@ class MainStore {
         if (!this.dataset) {
             return false;
         }
-        for (const field of this.dataset.fieldsMeta) {
+        for (const field of this.dataset.meta) {
             const next = this.writableFields.find(f => f.fid === field.fid);
             if (next && (Object.keys(next) as (keyof IDatasetFieldMeta)[]).some(key => next[key] !== field[key])) {
                 return true;
@@ -41,7 +41,7 @@ class MainStore {
         this.effects = [
             reaction(() => this.dataset, dataset => {
                 if (dataset) {
-                    this.writableFields = [...dataset.fieldsMeta];
+                    this.writableFields = [...dataset.meta];
                 } else {
                     this.writableFields = [];
                 }

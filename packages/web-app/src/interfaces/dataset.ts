@@ -21,11 +21,12 @@ export interface IDatasetFieldMeta {
 export interface IDatasetInfo {
     id: string;
     name: string;
-    desc: string;
-    /** in seconds */
-    createTime: number;
+    // desc: string;
+    // /** in seconds */
+    // createTime: number;
 }
 
 export interface IDataset extends IDatasetInfo {
-    fieldsMeta: IDatasetFieldMeta[];
+    type: string;
+    meta: IDatasetFieldMeta[];
 }

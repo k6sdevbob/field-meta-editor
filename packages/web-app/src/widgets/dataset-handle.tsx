@@ -59,9 +59,12 @@ const DatasetHandle = observer(function DatasetHandle() {
         }
         try {
             setSubmitting(true);
-            await updateDatasetMeta(dataset.id, writableFields);
+            const nextFields = await updateDatasetMeta(dataset.id, writableFields);
             // refresh dataset
-            submitDatasetId(dataset.id);
+            mainStore.openDataset({
+                ...dataset,
+                meta: nextFields,
+            });
         } catch (error) {
             notify({
                 type: 'error',

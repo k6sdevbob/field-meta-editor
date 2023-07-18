@@ -14,44 +14,44 @@ export const getDataset = async (datasetId: string): Promise<IDataset> => {
 
 interface IUpdateDatasetMetaPayload {
     dataId: string;
-    Meta: IDataset['fieldsMeta'];
+    Meta: IDataset['meta'];
 }
 
-interface IUpdateDatasetMetaResult {
-    Meta: IDataset['fieldsMeta'];
-}
-
-export const updateDatasetMeta = async (datasetId: string, fields: IDataset['fieldsMeta']): Promise<IDataset['fieldsMeta']> => {
+export const updateDatasetMeta = async (datasetId: string, fields: IDataset['meta']): Promise<IDataset['meta']> => {
     const url = resolveServiceUrl('/meta/update');
-    const res = unwrap(await request.post<IUpdateDatasetMetaPayload, IUpdateDatasetMetaResult>(url, { dataId: datasetId, Meta: fields }));
-    return res.Meta;
+    const res = unwrap(await request.post<IUpdateDatasetMetaPayload, IDataset['meta']>(url, { dataId: datasetId, Meta: fields }));
+    return res;
 };
 
 interface IGetDatasetPreviewPayload {
     dataId: string;
-    workflow: IDataQueryWorkflowStep[];
-    limit: number;
-    offset: number;
+    payload: {
+        workflow: IDataQueryWorkflowStep[];
+        limit: number;
+        offset: number;
+    };
 }
 
-interface IGetDatasetPreviewResult {
-    compiledSQL: string;
-    data: IRow[];
-}
+// interface IGetDatasetPreviewResult {
+//     compiledSQL: string;
+//     data: IRow[];
+// }
 
 export const getDatasetPreview = async (datasetId: string, limit: number): Promise<IRow[]> => {
     const url = resolveServiceUrl('/dsl/query');
-    const res = unwrap(await request.post<IGetDatasetPreviewPayload, IGetDatasetPreviewResult>(url, {
+    const res = unwrap(await request.post<IGetDatasetPreviewPayload, IRow[]>(url, {
         dataId: datasetId,
-        workflow: [{
-            type: 'view',
-            query: [{
-                op: 'raw',
-                fields: ['*'],
+        payload: {
+            workflow: [{
+                type: 'view',
+                query: [{
+                    op: 'raw',
+                    fields: ['*'],
+                }],
             }],
-        }],
-        limit,
-        offset: 0,
+            limit,
+            offset: 0,
+        },
     }));
-    return res.data;
+    return res;
 };

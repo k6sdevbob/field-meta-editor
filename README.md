@@ -10,3 +10,12 @@ yarn install
 # serve with hot reload
 yarn workspace web-app dev
 ```
+
+### Configure the backend
+
+Edit the file `packages/web-app/.env` to configure the backend.
+
+```dotenv
+VITE_SERVER_HOST = http://localhost:3000
+
+```
