@@ -1,6 +1,6 @@
 # Titanic Demo Dataset
 
-In this example, we use partial demo dataset `tianic` from out product RATH.
+In this example, we use partial demo dataset `Titanic` from out product RATH.
 
 | passengerId | survived | pclass | name | sex | age | ticket | parch |
 |-------------|----------|--------|--------|------|-----|--------|-------|

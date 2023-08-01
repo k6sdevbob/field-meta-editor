@@ -1,0 +1,9 @@
+{
+  "name": "meta-service",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "postinstall": "go mod download",
+    "start": "go run ./dataset/server"
+  }
+}
