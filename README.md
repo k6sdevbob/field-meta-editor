@@ -57,7 +57,7 @@ yarn install
 
 ```bash
 # start the server
-go run .
+yarn workspace meta-service start
 ```
 
 ### Start the web application
