@@ -31,13 +31,13 @@ func (a *api) InitPG() error {
 	}
 
 	// Create table
-	_, err := a.db.Exec("CREATE TABLE tianic (PassengerId int, Survived int, Pclass int, Name text, Sex text, Age text, Ticket int, Parch int)")
+	_, err := a.db.Exec("CREATE TABLE tianic (passengerId int, survived int, pclass int, name text, sex text, age text, ticket int, parch int)")
 	if err != nil {
 		return fmt.Errorf("An error '%s' was not expected while creating table", err)
 	}
 
 	for _, row := range tianic {
-		_, err := a.db.Exec("INSERT INTO tianic (PassengerId, Survived, Pclass, Name, Sex, Age, Ticket, Parch) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", row.passengerId, row.survived, row.pclass, row.name, row.sex, row.age, row.ticket, row.parch)
+		_, err := a.db.Exec("INSERT INTO tianic (passengerId, survived,pclass, name, sex, age, ticket, parch) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", row.passengerId, row.survived, row.pclass, row.name, row.sex, row.age, row.ticket, row.parch)
 		if err != nil {
 			return fmt.Errorf("An error '%s' was not expected while inserting a row", err)
 		}
@@ -48,92 +48,59 @@ func (a *api) InitPG() error {
 func (a *api) InitDataset() error {
 	datasets := []*Dataset{
 		{
-			DataID: 1,
-			Name:   "tianic",
-			Type:   "table",
+			DatasetId: 1,
+			Name:      "tianic",
 			Meta: []Meta{
 				{
-					Fid:          "col_0",
+					Fid:          "passengerId",
 					Name:         "passengerId",
-					Desc:         "",
 					SemanticType: "quantitative",
-					GeoRole:      "none",
-					DataType:     "int",
-					Forder:        0,
 				},
 				{
-					Fid:          "col_1",
+					Fid:          "survived",
 					Name:         "survived",
-					Desc:         "",
 					SemanticType: "quantitative",
-					GeoRole:      "none",
-					DataType:     "int",
-					Forder:        1,
 				},
 				{
-					Fid:          "col_2",
+					Fid:          "pclass",
 					Name:         "pclass",
-					Desc:         "",
 					SemanticType: "quantitative",
-					GeoRole:      "none",
-					DataType:     "int",
-					Forder:        2,
 				},
 				{
-					Fid:          "col_3",
+					Fid:          "name",
 					Name:         "name",
-					Desc:         "",
 					SemanticType: "quantitative",
-					GeoRole:      "none",
-					DataType:     "string",
-					Forder:        3,
 				},
 				{
-					Fid:          "col_4",
+					Fid:          "sex",
 					Name:         "sex",
-					Desc:         "",
 					SemanticType: "quantitative",
-					GeoRole:      "none",
-					DataType:     "string",
-					Forder:        4,
 				},
 				{
-					Fid:          "col_5",
+					Fid:          "age",
 					Name:         "age",
-					Desc:         "",
 					SemanticType: "quantitative",
-					GeoRole:      "none",
-					DataType:     "int",
-					Forder:        6,
 				},
 				{
-					Fid:          "col_6",
+					Fid:          "ticket",
 					Name:         "ticket",
-					Desc:         "",
 					SemanticType: "quantitative",
-					GeoRole:      "none",
-					DataType:     "string",
-					Forder:        6,
 				},
 				{
-					Fid:          "col_7",
+					Fid:          "parch",
 					Name:         "parch",
-					Desc:         "",
 					SemanticType: "quantitative",
-					GeoRole:      "none",
-					DataType:     "int",
-					Forder:        7,
 				},
 			},
 		},
 	}
 
 	// Create tables
-	_, err := a.db.Exec("CREATE TABLE dataset (DataID int, Name text, Type text)")
+	_, err := a.db.Exec("CREATE TABLE dataset (DatasetId int, Name text)")
 	if err != nil {
 		return fmt.Errorf("An error '%s' was not expected while creating dataset table", err)
 	}
-	_, err = a.db.Exec("CREATE TABLE meta (Fid text, Name text, Desc text, SemanticType text, GeoRole text, DataType text, Forder int, DatasetID int)")
+	_, err = a.db.Exec("CREATE TABLE meta (Fid text, Name text, SemanticType text,DatasetID int)")
 	if err != nil {
 		return fmt.Errorf("An error '%s' was not expected while creating meta table", err)
 	}
@@ -145,7 +112,7 @@ func (a *api) InitDataset() error {
 	}
 
 	for _, dataset := range datasets {
-		res, err := tx.Exec("INSERT INTO dataset (DataID, Name, Type) VALUES (?, ?, ?)", dataset.DataID, dataset.Name, dataset.Type)
+		res, err := tx.Exec("INSERT INTO dataset (DatasetId, Name) VALUES (?, ?)", dataset.DatasetId, dataset.Name)
 		if err != nil {
 			return fmt.Errorf("An error '%s' was not expected while inserting a row into dataset", err)
 		}
@@ -155,7 +122,7 @@ func (a *api) InitDataset() error {
 		}
 
 		for _, meta := range dataset.Meta {
-			_, err = tx.Exec("INSERT INTO meta (Fid, Name, Desc, SemanticType, GeoRole, DataType, Forder, DatasetID) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", meta.Fid, meta.Name, meta.Desc, meta.SemanticType, meta.GeoRole, meta.DataType, meta.Forder, dataID)
+			_, err = tx.Exec("INSERT INTO meta (Fid, Name, SemanticType, DatasetID) VALUES (?, ?, ?, ?)", meta.Fid, meta.Name, meta.SemanticType, dataID)
 			if err != nil {
 				return fmt.Errorf("An error '%s' was not expected while inserting a row into meta", err)
 			}
