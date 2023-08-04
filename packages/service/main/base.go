@@ -2,64 +2,46 @@ package main
 
 import (
 	"fmt"
+	"strconv"
 )
 
 type Dataset struct {
-	DataID int    `json:"dataId"`
-	Name   string `json:"name"`
-	Type   string `json:"type"`
-	Meta   []Meta `json:"meta"`
+	DatasetId int    `json:"datasetId"`
+	Name      string `json:"name"`
+	Meta      []Meta `json:"meta"`
 }
 
 type Meta struct {
 	Fid          string `json:"fid"`
 	Name         string `json:"name"`
-	Desc         string `json:"desc"`
 	SemanticType string `json:"semanticType"`
-	GeoRole      string `json:"geoRole"`
-	DataType     string `json:"dataType"`
-	Forder        int64  `json:"order"`
 }
 
 // QueryMeta
-func (a *api) QueryMeta(dataId int) ([]Meta, error) {
-	// Prepare SQL statement
-	stmt, err := a.db.Prepare("SELECT Fid, Name, Desc, SemanticType, GeoRole, DataType, Forder FROM meta WHERE DatasetID = ?")
-	if err != nil {
-		return nil, fmt.Errorf("unable to prepare statement: %v", err)
-	}
+func (a *api) QueryMeta(datasetIdStr string) ([]Meta, error) {
+	datasetId, _ := strconv.Atoi(datasetIdStr)
+	// Prepare & Execute SQL statement
+	stmt, _ := a.db.Prepare("SELECT Fid, Name, SemanticType FROM meta WHERE DatasetID = ?")
 	defer stmt.Close()
-
-	// Execute SQL statement
-	rows, err := stmt.Query(dataId)
-	if err != nil {
-		return nil, fmt.Errorf("unable to execute query: %v", err)
-	}
+	rows, _ := stmt.Query(datasetId)
 	defer rows.Close()
 
 	// Iterate over the rows and append to the slice
 	var metas []Meta
 	for rows.Next() {
 		var meta Meta
-		err = rows.Scan(&meta.Fid, &meta.Name, &meta.Desc, &meta.SemanticType, &meta.GeoRole, &meta.DataType, &meta.Forder)
-		if err != nil {
-			return nil, fmt.Errorf("unable to scan row: %v", err)
-		}
+		_ = rows.Scan(&meta.Fid, &meta.Name, &meta.SemanticType)
 		metas = append(metas, meta)
-	}
-
-	// Check for errors from iterating over rows
-	if err = rows.Err(); err != nil {
-		return nil, fmt.Errorf("error iterating rows: %v", err)
 	}
 
 	return metas, nil
 }
 
 // UpdateMeta
-func (a *api) UpdateMeta(dataId int, metas []Meta) error {
+func (a *api) UpdateMeta(datasetIdStr string, metas []Meta) error {
+	datasetId, _ := strconv.Atoi(datasetIdStr)
 	// Prepare SQL statement
-	stmt, err := a.db.Prepare("UPDATE meta SET Name = ?, Desc = ?, SemanticType = ?, GeoRole = ?, DataType = ?, Forder = ? WHERE Fid = ? AND DatasetID = ?")
+	stmt, err := a.db.Prepare("UPDATE meta SET Name = ?, SemanticType = ? WHERE Fid = ? AND DatasetID = ?")
 	if err != nil {
 		return fmt.Errorf("unable to prepare statement: %v", err)
 	}
@@ -67,7 +49,7 @@ func (a *api) UpdateMeta(dataId int, metas []Meta) error {
 
 	for _, meta := range metas {
 		// Execute SQL statement
-		result, err := stmt.Exec(meta.Name, meta.Desc, meta.SemanticType, meta.GeoRole, meta.DataType, meta.Forder, meta.Fid, dataId)
+		result, err := stmt.Exec(meta.Name, meta.SemanticType, meta.Fid, datasetId)
 		if err != nil {
 			return fmt.Errorf("unable to execute update: %v", err)
 		}
@@ -84,16 +66,17 @@ func (a *api) UpdateMeta(dataId int, metas []Meta) error {
 }
 
 // QueryDataset
-func (a *api) QueryDataset(dataId int) (Dataset, error) {
+func (a *api) QueryDataset(datasetIdStr string) (Dataset, error) {
+	datasetId, _ := strconv.Atoi(datasetIdStr)
 	// Query the Dataset
 	var dataset Dataset
-	err := a.db.QueryRow("SELECT DataID, Name, Type FROM dataset WHERE DataID = ?", dataId).Scan(&dataset.DataID, &dataset.Name, &dataset.Type)
+	err := a.db.QueryRow("SELECT DatasetId, Name FROM dataset WHERE DatasetId = ?", datasetId).Scan(&dataset.DatasetId, &dataset.Name)
 	if err != nil {
 		return Dataset{}, fmt.Errorf("unable to execute query on datasets table: %v", err)
 	}
 
 	// Query the Metas associated with the Dataset
-	rows, err := a.db.Query("SELECT Fid, Name, Desc, SemanticType, GeoRole, DataType, Forder FROM meta WHERE DatasetID = ?", dataId)
+	rows, err := a.db.Query("SELECT Fid, Name, SemanticType FROM meta WHERE DatasetID = ?", datasetId)
 	if err != nil {
 		return Dataset{}, fmt.Errorf("unable to execute query on meta table: %v", err)
 	}
@@ -102,7 +85,7 @@ func (a *api) QueryDataset(dataId int) (Dataset, error) {
 	// Iterate over the rows and append to the Meta slice
 	for rows.Next() {
 		var meta Meta
-		err = rows.Scan(&meta.Fid, &meta.Name, &meta.Desc, &meta.SemanticType, &meta.GeoRole, &meta.DataType, &meta.Forder)
+		err = rows.Scan(&meta.Fid, &meta.Name, &meta.SemanticType)
 		if err != nil {
 			return Dataset{}, fmt.Errorf("unable to scan row: %v", err)
 		}
