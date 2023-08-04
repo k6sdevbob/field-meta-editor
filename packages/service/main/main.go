@@ -3,7 +3,6 @@ package main
 import (
 	"database/sql"
 	"encoding/json"
-	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/kanaries/gw-dsl-parser/parser"
 	_ "github.com/mattn/go-sqlite3"
@@ -98,7 +97,7 @@ func (a *api) UpdateMetaHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Fprint(w, "Meta updated successfully")
+	//fmt.Fprint(w, "Meta updated successfully")
 
 	meta, err := a.QueryMeta(ur.DatasetID)
 	if err != nil {
